@@ -1,0 +1,90 @@
+spec:
+  name: ai-resume-screener
+  version: 1.0.0
+  owner: simon
+  description: |
+    AI 简历筛选助手：上传简历 + JD → 自动解析 → 胜任力评分 → 可视化结果
+
+  constraints:
+    - "简历支持 PDF 和 Word (.docx) 两种格式"
+    - "简历解析必须在 5 秒内完成"
+    - "评分输出必须包含分项得分 + 综合得分 + 匹配理由"
+    - "界面加载时间不超过 3 秒"
+
+  data_models:
+    Resume:
+      fields:
+        id: UUID (primary key)
+        filename: string
+        raw_text: string
+        name: string (nullable, extracted from text)
+        email: string (nullable)
+        phone: string (nullable)
+        education: string (nullable, highest degree)
+        years_experience: integer (derived from text)
+        skills: list[string] (extracted keywords)
+        raw_json: JSON (full structured output)
+        created_at: timestamp
+
+    JobDescription:
+      fields:
+        id: UUID (primary key)
+        title: string
+        company: string
+        requirements: list[string]
+        preferred_skills: list[string]
+        experience_years: integer (nullable)
+        education_level: string (nullable)
+        raw_text: string
+
+    ScoreResult:
+      fields:
+        resume_id: UUID (FK)
+        jd_id: UUID (FK)
+        overall_score: float (0-100)
+        skill_match_score: float (0-100)
+        experience_score: float (0-100)
+        education_score: float (0-100)
+        semantic_score: float (0-100)
+        reasons: list[string]
+        top_matches: list[string]
+        gaps: list[string]
+        weights_used: dict
+        created_at: timestamp
+
+  scoring_weights:
+    default:
+      skill_match: 0.40
+      experience: 0.30
+      education: 0.15
+      semantic: 0.15
+
+    tech_lead:
+      skill_match: 0.50
+      experience: 0.30
+      education: 0.10
+      semantic: 0.10
+
+    fresh:
+      skill_match: 0.30
+      experience: 0.20
+      education: 0.30
+      semantic: 0.20
+
+  acceptance_criteria:
+    - "上传 PDF 简历后，系统正确提取姓名、邮箱、技能列表"
+    - "上传 JD 文本后，系统提取岗位名称、核心要求、技能列表"
+    - "评分接口返回 5 项分项得分 + 综合得分 + 匹配理由"
+    - "技能匹配部分：候选人技能与 JD 要求重叠 → 该项满分"
+    - "技能匹配部分：候选人技能不匹配 JD 要求 → 列出 gaps"
+    - "工作年限：候选人年限在 JD 范围内 → 满分"
+    - "工作年限：候选人年限低于 JD 要求 → 扣分"
+    - "界面展示：左侧上传简历，右侧显示评分结果卡片"
+
+  technology_stack:
+    - Python 3.10+
+    - Streamlit (web UI)
+    - pdfplumber (PDF parsing)
+    - python-docx (Word parsing)
+    - SQLite (persistence)
+    - LLM wrapper (optional, for enhanced parsing)

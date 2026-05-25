@@ -1,0 +1,2 @@
+"""AI Resume Screener - 简历筛选系统"""
+__version__ = "1.0.0"

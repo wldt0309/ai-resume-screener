@@ -1,0 +1,25 @@
+# AI Resume Screener - 依赖包
+
+# Core
+streamlit>=1.28.0
+pdfplumber>=0.10.0
+python-docx>=1.0.0
+
+# Database
+# (SQLite is built-in, no extra package needed)
+
+# Optional: LLM providers (install only what you need)
+# OpenAI
+# openai>=1.0.0
+
+# Anthropic
+# anthropic>=0.18.0
+
+# 阿里的通义千问
+# requests>=2.28.0
+
+# 向量数据库 (for semantic search, future)
+# chromadb>=0.4.0
+
+# Utilities
+python-dotenv>=1.0.0
